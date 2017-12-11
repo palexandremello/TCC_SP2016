@@ -3,16 +3,16 @@ begin
 
 	  start_cpu_time = get_cpu_time()    
 
-wks = gsn_open_wks("pdf","ETS_08")
+wks = gsn_open_wks("pdf","$HOME/TCC_SP2016/saidas_graph/ETS_08")
  
 atilde = "a~H-13V2F35~D~FV-2H3~" ; ã
 cedil = "c~H-13F35~K~FH2~" ; ç
-files = systemfunc("ls /media/palexandre/814dc6e5-c604-4cad-a48a-8bec3a7c8582/home/paulo/TCC_RODADAS/MEM*/wrfout_d01_2016-03-*")
+files = systemfunc("ls $HOME/TCC_RODADAS/MEM*/wrfout_d01_2016-03-*")
 nfiles = dimsizes(files)
 
 print(files+"")
 exit
-filename = "./35MUE250GC_SIR.shp"
+filename = "$HOME/TCC_SP2016/SP_munproj/35MUE250GC_SIR.shp"
 
 
 ini=(/0,5,10,15,20,25,30/)
