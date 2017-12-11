@@ -1,48 +1,28 @@
-
+loadscript("configraph.ncl")
+external PROGRESSBAR "./cprogressbar.so"
+;external EX01 "./csquad90.so"
+load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/previsao_conjuntoTCC.ncl"
+load "$NCARG_ROOT/lib/ncarg/nclscripts/wrf/WRFUserARW.ncl"
 begin
 
 	  start_cpu_time = get_cpu_time()    
 
 wks = gsn_open_wks("pdf","$HOME/TCC_SP2016/saidas_graph/ETS_08")
- 
+
 atilde = "a~H-13V2F35~D~FV-2H3~" ; ã
 cedil = "c~H-13F35~K~FH2~" ; ç
 files = systemfunc("ls $HOME/TCC_RODADAS/MEM*/wrfout_d01_2016-03-*")
 nfiles = dimsizes(files)
 
-print(files+"")
-exit
-filename = "$HOME/TCC_SP2016/SP_munproj/35MUE250GC_SIR.shp"
 
+filename = "$HOME/TCC_SP2016/SP_munproj/35MUE250GC_SIR.shp"
 
 ini=(/0,5,10,15,20,25,30/)
 fin=(/5,10,15,20,25,30,35/)
 
-niq = dimsizes(iq)
-
-opt = True
-opt@gsnAddCyclic = False
-opt@gsnMaximize = True
-opt@gsnDraw = False
-opt@gsnFrame = False  
-opt@mpOutlineOn           = True
-opt@mpDataBaseVersion     = "MediumRes"
-opt@mpOutlineBoundarySets = "AllBoundaries"
-opt@pmTickMarkDisplayMode = "Always"
-opt@mpDataSetName = "Earth..4"
-opt@mpFillColor = -1
-opt@mpMonoFillColor = True
-
-opt@mpNationalLineThicknessF = 3   
-opt@mpMinLatF = -23.50
-opt@mpMaxLatF = -23
-opt@mpMinLonF = -47.15
-opt@mpMaxLonF = -46
-
-opt@tiMainString = "Probabilidade Chuva > 5mm"
 
 
-dados     = addfiles(files(iq),"r")
+dados     = addfiles(files,"r")
 
  lat1 = dados[0]->XLAT(0,:,:)
    lon1 = wrf_user_getvar(dados[0],"XLONG",0)
@@ -52,13 +32,14 @@ ntimes = dimsizes(times)
 
 
 ETS = new((/ntimes,109,89/),"float")
-chuva = new((/niq,ntimes,109,89/),"float")	
+chuva = new((/dimsizes(files),ntimes,109,89/),"float")	
 
 lonnew = ispan( -4715, -4600, 16  )/100.
 latnew = ispan( -2350, -2300, 16  )/100.
 
 j=0
-	do k = 0,niq-1
+
+do k = 0,dimsizes(files)-1
 
 
  		; Get non-convective, convective 
@@ -71,7 +52,7 @@ j=0
    		lat2d = wrf_user_getvar(dados[k],"XLAT",0)
   		 lon2d = wrf_user_getvar(dados[k],"XLONG",0)
 
-		chuva(j,:,:,:) = rcm2rgrid(lat2d,lon2d,rain_tot,latnew,lonnew,0)
+		;chuva(j,:,:,:) = rcm2rgrid(lat2d,lon2d,rain_tot,latnew,lonnew,0)
 j=j+1
 
 	delete(rain_exp)
@@ -79,8 +60,11 @@ j=j+1
 	delete(rain_tot)
 
 	
+    PROGRESSBAR::progress(k,dimsizes(files))
+
 
 end do
+exit()
 	chuva!0 = "time"
 		chuva!2 = "lon"
 		chuva!1 = "lat"
