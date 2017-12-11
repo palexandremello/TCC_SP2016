@@ -1,6 +1,5 @@
 loadscript("configraph.ncl")
 external PROGRESSBAR "./cprogressbar.so"
-;external EX01 "./csquad90.so"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/previsao_conjuntoTCC.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/wrf/WRFUserARW.ncl"
 begin
@@ -11,7 +10,7 @@ wks = gsn_open_wks("pdf","$HOME/TCC_SP2016/saidas_graph/ETS_08")
 
 atilde = "a~H-13V2F35~D~FV-2H3~" ; ã
 cedil = "c~H-13F35~K~FH2~" ; ç
-files = systemfunc("ls $HOME/TCC_RODADAS/MEM*/wrfout_d01_2016-03-*")
+files = systemfunc("ls $HOME/TCC_RODADAS/MEM*/wrfout_d01_2016-03-08_00:*")
 nfiles = dimsizes(files)
 
 
@@ -24,11 +23,13 @@ fin=(/5,10,15,20,25,30,35/)
 
 dados     = addfiles(files,"r")
 
+printVarSummary(dados)
+exit()
  lat1 = dados[0]->XLAT(0,:,:)
    lon1 = wrf_user_getvar(dados[0],"XLONG",0)
 
 times = wrf_user_list_times(dados[0]) 
-ntimes = dimsizes(times)
+
 
 
 ETS = new((/ntimes,109,89/),"float")
