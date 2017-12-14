@@ -1,7 +1,9 @@
 loadscript("configraph.ncl")
-external PROGRESSBAR "./cprogressbar.so"
+external PROGRESSBAR "./progressbar.so"
+external Prev_conjuto "./sum_area.so"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/previsao_conjuntoTCC.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/wrf/WRFUserARW.ncl"
+load "$NCARG_ROOT/lib/ncarg/nclscripts/wrf/WRF_contributed.ncl"
 begin
 
 	  start_cpu_time = get_cpu_time()    
@@ -24,23 +26,25 @@ fin=(/5,10,15,20,25,30,35/)
 dados     = addfiles(files,"r")
 
 printVarSummary(dados)
-exit()
- lat1 = dados[0]->XLAT(0,:,:)
+ 
+   lat1 = dados[0]->XLAT(0,:,:)
    lon1 = wrf_user_getvar(dados[0],"XLONG",0)
+k=0
 
-times = wrf_user_list_times(dados[0]) 
 
-
+Times = dados[0]->Times                    ; Times(Time, DateStrLen)    (type character)
+tempo = round(wrf_times_c(Times,0),3)
+ntimes = dimsizes(tempo)
 
 ETS = new((/ntimes,109,89/),"float")
 chuva = new((/dimsizes(files),ntimes,109,89/),"float")	
 
-lonnew = ispan( -4715, -4600, 16  )/100.
-latnew = ispan( -2350, -2300, 16  )/100.
+lonnew = ispan( -4715, -4615, 16  )/100.
+latnew = ispan( -2350, -2450, 16  )/100.
 
 j=0
 
-do k = 0,dimsizes(files)-1
+
 
 
  		; Get non-convective, convective 
@@ -50,21 +54,43 @@ do k = 0,dimsizes(files)-1
     		rain_tot = rain_exp + rain_con
       		rain_tot@description = "Total precipitado"
 
-   		lat2d = wrf_user_getvar(dados[k],"XLAT",0)
+    
+inst = new( (/dimsizes(rain_tot(:,0,0)), dimsizes(rain_tot(0,:,0)), dimsizes(rain_tot(0,0,:)) /), \
+           "float")
+   		
+      lat2d = wrf_user_getvar(dados[k],"XLAT",0)
   		 lon2d = wrf_user_getvar(dados[k],"XLONG",0)
 
-		;chuva(j,:,:,:) = rcm2rgrid(lat2d,lon2d,rain_tot,latnew,lonnew,0)
-j=j+1
+    do i = 0,dimsizes(inst(:,0,0))-1        
+        
+        if (i .gt. 0) then
+          ; write branch
+       
+                inst(j,:,:) = rain_tot(i,:,:) - rain_tot(i-1,:,:) 
+                j=j+1           
+            else
+                inst(j,:,:) = rain_tot(i,:,:)
+                j=j+1
 
-	delete(rain_exp)
-	delete(rain_con)
-	delete(rain_tot)
 
-	
-    PROGRESSBAR::progress(k,dimsizes(files))
+            end if
+
+    
+    end do
 
 
-end do
+;    PROGRESSBAR::progress(k,dimsizes(files))
+     Prev_conjuto::acum_chuva(inst,rain_tot,dimsizes(rain_tot(:,0,0)), dimsizes(rain_tot(0,:,0)), dimsizes(rain_tot(0,0,:)),1)
+
+
+
+
+  end_cpu_time = get_cpu_time()
+  print(get_script_prefix_name() + ": elapsed time = " + (end_cpu_time-start_cpu_time) + " seconds.")
+exit()
+j=0
+
+
 exit()
 	chuva!0 = "time"
 		chuva!2 = "lon"
@@ -77,23 +103,7 @@ printVarSummary(chuva)
 
 exit
 
-do c = 0,6
-	
-	do k = 0,ntimes-1
-			do it = 0,108
 
-			  	do i = 0,88			
-
-			;if( Pall(i,1,k) .ge. ini(j)  .and. Pall(i,1,k) .lt. fin(j) .and. pall(i,2,k) .ge. ini(j)  .and. pall(i,2,k) \
-			;.lt. fin(j) ) then
-					
-					print(max(ETS))
-				end do
-		
-				
-			end do
-	end do
-end do
 
 copy_VarCoords(rain_exp(0,:,:,:),Prob)
 
@@ -105,34 +115,6 @@ Prob&lon = lon1(0,:)
 Prob&lat = lat1(:,0)
 Prob&lat@units = "degrees_north"
 Prob&lon@units = "degrees_east"
-
-;do i = 0,ntimes-1
-
-
-;		opt@gsnLeftString = times(i)
-
-;		opt@cnLinesOn = True
-		
-
-		
-;		opt@cnLevelSelectionMode = "ManualLevels"
-;		opt@cnMinLevelValF = 0
-;		opt@cnMaxLevelValF = 100
-;		opt@cnLevelSpacingF = 10
-;
-;		plot = gsn_csm_contour_map(wks,Prob(i,{-24:-23},{-48:-46}),opt)
-;
-;lnres = True
-;lnres@gsLineColor = "Black"
-;lnres@gsLineThicknessF = 1.5
-
-;linermsp = gsn_add_shapefile_polylines(wks,plot,filename,lnres)
-
- ; draw(plot)
- ; frame(wks)
-
-
-;end do
 
 
   end_cpu_time = get_cpu_time()
