@@ -1,4 +1,4 @@
 C NCLFORTSTART
-    subroutine acum_chuva(matrix,rain_tot,t,x,y,z)
-	real  matrix(t,x,y), rain_tot(t,x,y)
+    subroutine print_dados(matrix,t,x,y,z)
+	real  matrix(t,x,y)
 C NCLEND

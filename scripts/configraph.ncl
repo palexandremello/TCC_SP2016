@@ -34,9 +34,9 @@ opt@mpCenterLonF = 315
 	opt@mpFillColor = -1
 	opt@mpMonoFillColor = True
 	opt@cnLevelSelectionMode = "ManualLevels"
-	opt@cnMinLevelValF = 44
-	opt@cnMaxLevelValF = 60
-	opt@cnLevelSpacingF = 5
+	opt@cnMinLevelValF = 20
+	opt@cnMaxLevelValF = 100
+	opt@cnLevelSpacingF = 20
 	opt@cnLinesOn = False
 	opt@lbLabelBarOn = True
 	
