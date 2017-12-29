@@ -16,10 +16,10 @@ opt = cfg
 
 
 opt@mpProjection          = "CylindricalEquidistant"
-opt@mpMinLatF = -60
-opt@mpMaxLatF = 10.
-opt@mpMinLonF =  -80
-opt@mpMaxLonF = -30
+opt@mpMinLatF = -30
+opt@mpMaxLatF = -16
+opt@mpMinLonF =  -52.5
+opt@mpMaxLonF = -40
 opt@mpCenterLonF = 315
 
 	opt@gsnAddCyclic = False

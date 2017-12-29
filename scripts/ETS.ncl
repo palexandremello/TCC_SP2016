@@ -1,6 +1,5 @@
 loadscript("configraph.ncl")
-external PROGRESSBAR "./progressbar.so"
-external Prev_conjuto "./sum_area.so"
+
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/previsao_conjuntoTCC.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/wrf/WRFUserARW.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/wrf/WRF_contributed.ncl"
@@ -8,11 +7,11 @@ begin
 
 	  start_cpu_time = get_cpu_time()    
 
-wks = gsn_open_wks("pdf","ETS_08")
+wks = gsn_open_wks("pdf","ETS_0912")
 
 atilde = "a~H-13V2F35~D~FV-2H3~" ; ã
 cedil = "c~H-13F35~K~FH2~" ; ç
-files = systemfunc("ls $HOME/TCC_RODADAS/MEM*/wrfout_d01_2016-03-08_00:*")
+files = systemfunc("ls $HOME/TCC_RODADAS/MEM*/wrfout_d01_2016-03-09_12:*")
 nfiles = dimsizes(files)
 
 
@@ -44,7 +43,7 @@ if (str_concat(t(0,8:9)) .eq. "08" .and. str_concat(t(0,11:12)) .eq. "00" ) then
 
 units = "hours since 2016-03-08 00:00:00"
 
-acum_ind = ind(cd_inv_calendar(2016, 3, 11, 12, 0, 0, units, 0) .eq. tempo )
+acum_ind = ind(cd_inv_calendar(2016, 3, 11, 16, 0, 0, units, 0) .eq. tempo )
 print(t(acum_ind,0:18)+"")
 
     else if (str_concat(t(0,8:9)) .eq. "08" \
@@ -52,7 +51,7 @@ print(t(acum_ind,0:18)+"")
 
 units = "hours since 2016-03-08 12:00:00"
 
-acum_ind = ind(cd_inv_calendar(2016, 3, 11, 12, 0, 0, units, 0) .eq. tempo )
+acum_ind = ind(cd_inv_calendar(2016, 3, 11, 16, 0, 0, units, 0) .eq. tempo )
 print(t(acum_ind,0:18)+"")
 
       else if (str_concat(t(0,8:9)) .eq. "09" \
@@ -60,7 +59,7 @@ print(t(acum_ind,0:18)+"")
 
 units = "hours since 2016-03-09 00:00:00"
 
-acum_ind = ind(cd_inv_calendar(2016, 3, 11, 12, 0, 0, units, 0) .eq. tempo )
+acum_ind = ind(cd_inv_calendar(2016, 3, 11, 16, 0, 0, units, 0) .eq. tempo )
 print(t(acum_ind,0:18)+"")
           
             else if (str_concat(t(0,8:9)) .eq. "09" \
@@ -68,7 +67,7 @@ print(t(acum_ind,0:18)+"")
 
 units = "hours since 2016-03-09 12:00:00"
 
-acum_ind = ind(cd_inv_calendar(2016, 3, 11, 12, 0, 0, units, 0) .eq. tempo )
+acum_ind = ind(cd_inv_calendar(2016, 3, 11, 16, 0, 0, units, 0) .eq. tempo )
 print(t(acum_ind,0:18)+"")
 
                   else if (str_concat(t(0,8:9)) .eq. "10" \
@@ -76,7 +75,7 @@ print(t(acum_ind,0:18)+"")
 
 units = "hours since 2016-03-10 00:00:00"
 
-acum_ind = ind(cd_inv_calendar(2016, 3, 11, 12, 0, 0, units, 0) .eq. tempo )
+acum_ind = ind(cd_inv_calendar(2016, 3, 11, 16, 0, 0, units, 0) .eq. tempo )
 print(t(acum_ind,0:18)+"")
                       
 
@@ -85,7 +84,7 @@ print(t(acum_ind,0:18)+"")
 
 units = "hours since 2016-03-10 12:00:00"
 
-acum_ind = ind(cd_inv_calendar(2016, 3, 11, 12, 0, 0, units, 0) .eq. tempo )
+acum_ind = ind(cd_inv_calendar(2016, 3, 11, 16, 0, 0, units, 0) .eq. tempo )
 print(t(acum_ind,0:18)+"")
                       
                         end if
@@ -143,7 +142,7 @@ acum12= 0
 
 
 j=0
-    do i = 0,dimsizes(inst(0,:,0,0))-1,12  ; do -> 1 até NTEMPO       
+    do i = 4,dimsizes(inst(0,:,0,0))-1,12  ; do -> 1 até NTEMPO       
 
 
         if (i .eq. acum_ind) then
@@ -155,7 +154,8 @@ j=0
          else
     
 
-                print(t(i,0:18)+"  "+t(i+11,0:18)+"")         
+                print(t(i,0:18)+"  "+t(i+11,0:18)+"")
+                print(i+" "+(i+11))         
                acum12(:,j,:,:) = dim_sum_n(inst(:,i:i+11,:,:),1) 
                 j=j+1  
         end if
@@ -191,23 +191,30 @@ Prob@lon2d = lon2d
 Prob&lat@units = "degrees_north"
 Prob&lon@units = "degrees_east"
 
-res = True
-res@gsnAddCyclic = False
-res@gsnMaximize = True
-res@mpProjection  = "CylindricalEquidistant"    ; The default
-res@mpDataBaseVersion = "MediumRes"
 
-do i = 0,dimsizes(ini)-1
+;do i = 0,dimsizes(ini)-1
 
 
-    do k = 0,dimsizes(Prob(0,:,0,0))-1
+;    do k = 0,dimsizes(Prob(0,:,0,0))-1
 
-        plot = gsn_csm_contour_map(wks,Prob(i,k,:,:),opt)
+;opt@tiMainString = ini(i)+"<= x < "+fin(i)
 
-        draw(plot)
-        frame(wks)
-    end do 
-end do
+;        if ( k .ge. 2 .and. k .le. 3 ) then
+
+;        plot = gsn_csm_contour_map(wks,Prob(i,k,:,:),opt)
+
+;        draw(plot)
+;        frame(wks)
+;      else
+;        print("nao plotando "+k)
+;      end if
+
+;    end do 
+;end do
+
+
+
+
   end_cpu_time = get_cpu_time()
   print(get_script_prefix_name() + ": elapsed time = " + (end_cpu_time-start_cpu_time) + " seconds.")
 
