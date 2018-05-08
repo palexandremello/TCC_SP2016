@@ -34,11 +34,11 @@ opt@mpCenterLonF = 315
 	opt@mpFillColor = -1
 	opt@mpMonoFillColor = True
 	opt@cnLevelSelectionMode = "ManualLevels"
-	opt@cnMinLevelValF = 20
+	opt@cnMinLevelValF = 0
 	opt@cnMaxLevelValF = 100
 	opt@cnLevelSpacingF = 20
 	opt@cnLinesOn = False
-	opt@lbLabelBarOn = True
+	opt@lbLabelBarOn = False
 	
  cmap     := read_colormap_file("BlAqGrYeOrReVi200")
   cmap(0,:) = (/0,0,0,0/)    ; make first color fully transparent
@@ -58,12 +58,25 @@ panel@gsnPanelLabelBar   = True
 panel@gsnMaximize = True
 panel@gsnPanelRowSpec = False
 panel@gsnPanelCenter = False
-panel@gsnPanelFigureStrings= (/"a","b","c","d","e","f"/) ; add strings to panel
 panel@gsnPanelBottom   = 0.015
 panel@lbLabelBarOn = True      
 panel@gsnPanelFigureStringsFontHeightF = 0.01  
 panel@pmLabelBarWidthF   = 0.45
 panel@lbLabelFontHeightF = 0.015
+
+;* ==============================================
+;
+panelxy = True
+panelxy@gsnAttachBorderOn = False
+panelxy@gsnMaximize = True
+panelxy@gsnPanelRowSpec = False
+panelxy@gsnPanelCenter = False
+panelxy@gsnPanelFigureStrings= (/"a","b","c","d","e","f"/) ; add strings to panel
+panelxy@gsnPanelBottom   = 0.015
+
+panelxy@gsnPanelFigureStringsFontHeightF = 0.01  
+panelxy@pmLabelBarWidthF   = 0.45
+panelxy@lbLabelFontHeightF = 0.015
 
 ;=========================================;
 
@@ -76,6 +89,7 @@ panel@lbLabelFontHeightF = 0.015
 opt2 = True
 opt2@gsnMaximize = True
 opt2@gsnFrame = False
+opt2@gsnDraw = False
 
 opt2@tiXAxisFont = 0
         opt2@xyDashPatterns = (/ 1.,3.,12.,15.,14.,0.,16./)
@@ -87,10 +101,10 @@ opt2@xyExplicitLegendLabels = (/"MEM1", "MEM2","MEM3","MEM4","MEM5","MEM6","Obse
 	opt2@pmLegendParallelPosF   = 1.3   ; Move to right
   	opt2@lgPerimOn              = False      ; No legend perimeter.
 	opt2@lgLabelFont = 0  	
-	opt2@lgLabelFontHeightF     = 0.02
+	opt2@lgLabelFontHeightF     = 0.025
 	opt2@lgItemPlacement = "ExplicitPlacement"
                         opt2@lgItemPositions = (/ 0, 0.15, 0.3, 0.45, 0.60/)
-	opt2@lgLabelFontThicknessF  = 4
+	opt2@lgLabelFontThicknessF  = 3
 	opt2@tmXBLabelFont = 0 
 	opt2@tmXBLabelStride = 1	
 	opt2@tmXBLabelFontThicknessF = 4
@@ -99,10 +113,10 @@ opt2@xyExplicitLegendLabels = (/"MEM1", "MEM2","MEM3","MEM4","MEM5","MEM6","Obse
      
 	opt2@xyLineThicknessF = 5.
 
-        opt2@tmXTBorderOn = False
-        opt2@tmYRBorderOn = False
-opt2@tmXTOn = False
-        opt2@tmYROn = False
+  opt2@tmXTBorderOn = False
+  opt2@tmYRBorderOn = False
+  opt2@tmXTOn = False
+  opt2@tmYROn = False
 	opt2@tmXBMode= "Explicit"
 	opt2@tmXBValues = (/1,3,5,7/)
 	opt2@tmXBLabels = (/"09/03 02UTC ","10/03 02UTC","11/03 02UTC","12/03 00UTC"/)
@@ -132,18 +146,20 @@ opt2@tmXTOn = False
 
 
     option = True
-    option@tiXAxisString = "mm" 
-        option@xyDashPatterns = (/ 16.,14.,12.,9.,3,0 /)
+    option@gsnDraw = False
+    option@gsnFrame = False
+    option@tiXAxisString = "Limiares" 
+        option@xyDashPatterns = (/ 0.,1.,16.,4.,13,9 /)
     option@xyExplicitLegendLabels = (/"MEM1","MEM2","MEM3","MEM4","MEM5","MEM6"/)
     
     option@pmLegendDisplayMode    = "Always"   ; Display a legend.
-    option@pmLegendWidthF         = 0.12        ; Make it smaller
-    option@pmLegendHeightF        = 0.2        ; Make it smaller
+    option@pmLegendWidthF         = 0.06        ; Make it smaller
+    option@pmLegendHeightF        = 0.1        ; Make it smaller
     option@pmLegendOrthogonalPosF = -1.35      ; Move into to plot      
     option@pmLegendParallelPosF   =  0.9      ; Move to right
     option@lgPerimOn              = False      ; No legend perimeter.
     option@lgLabelFont = 0      
-    option@lgLabelFontHeightF     = 0.0225
+    option@lgLabelFontHeightF     = 0.011
     option@lgItemPlacement = "ExplicitPlacement"
          option@xyLineColors = (/ "blue","red","green","orange","purple","yellow","violet"/)
 
@@ -156,7 +172,7 @@ opt2@tmXTOn = False
     option@tmXBLabelStride = 2  
     option@tmXBLabelFontThicknessF = 2
     option@tmXBLabelFontHeightF = 0.020
-    option@tiXAxisFontHeightF = 0.05
+    option@tiXAxisFontHeightF = 0.025
 ;---------------------------------------------
     option@tiXAxisFont = 0
     option@tiXAxisFontThicknessF = 4
@@ -176,14 +192,14 @@ opt2@tmXTOn = False
     option@tmYLMajorThicknessF = 2
 ;---------------------------------------------  
 
-    option@xyLineThicknessF = 2
+    option@xyLineThicknessF = 3
 
         option@tmXTBorderOn = False
         option@tmYRBorderOn = False
     option@tmXBMode= "Explicit"
-    option@tmXBValues = (/0,1,2,3,4,5,6/)
-    option@tmXBLabels = (/">= 0.1",">= 5",">= 10",">= 20",">= 30",">= 50",">= 100" /)
-    ;option@trYMaxF = 1.
+    option@tmXBValues = (/0,1,2,3,4/)
+    option@tmXBLabels = (/"[0.1:5) ","[5:10)","[10:20)","[20:30)","[30:46)" /)
+ ;   option@trYMaxF = 1
         option@gsnMaximize = True
         option@gsnFrame = False
         option@gsnDraw = False

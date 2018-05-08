@@ -5,21 +5,16 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/wrf/WRFUserARW.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/wrf/WRF_contributed.ncl"
 begin
 
-	  start_cpu_time = get_cpu_time()    
+      start_cpu_time = get_cpu_time()    
 
 
 atilde = "a~H-13V2F35~D~FV-2H3~" ; ã
 cedil = "c~H-13F35~K~FH2~" ; ç
-files = systemfunc("ls $HOME/TCC_RODADAS/MEM*/wrfout_d01_2016-03-10_00:*")
+files = systemfunc("ls $HOME/TCC_RODADAS/MEM*/wrfout_d01_2016-03-10_12:*")
 nfiles = dimsizes(files)
 
-graph = new((/3/), graphic)
 
 filename = "$HOME/TCC_SP2016/SP_munproj/35MUE250GC_SIR.shp"
-
-
-ini=(/0,  3, 5, 10,  20/)
-fin=(/3 , 5, 10, 20, 48/)
 
 
 
@@ -37,6 +32,13 @@ t = wrf_user_getvar(dados[0], "Times", -1)
 
 lon = ispan( -4715, -4615, 16 )/100.
 lat = ispan( -2400, -2300, 16 )/100.
+
+
+xpts = (/ min(lon),min(lon),max(lon),max(lon),min(lon)/)
+ypts = (/ min(lat),max(lat),max(lat),min(lat),min(lat)/)
+
+
+
 
 j=0
 
@@ -65,7 +67,7 @@ acum12= 0
 if (str_concat(t(0,8:9)) .eq. "08" .and. str_concat(t(0,11:12)) .eq. "00" ) then
 
 units = "hours since 2016-03-08 00:00:00"
-wks = gsn_open_wks("pdf","ETS_0800")
+wks = gsn_open_wks("pdf","rain_0800")
 
 
 acum_ind = ind(cd_inv_calendar(2016, 3, 11, 16, 0, 0, units, 0) .eq. tempo )
@@ -82,7 +84,7 @@ soma(:,dimsizes(soma(0,:))-1) = asciiread(f, (/toint(dim)/),"float")
              .and. str_concat(t(0,11:12)) .eq. "12" ) then
 
 units = "hours since 2016-03-08 12:00:00"
-wks = gsn_open_wks("pdf","ETS_0812")
+wks = gsn_open_wks("pdf","rain_0812")
 
 acum_ind = ind(cd_inv_calendar(2016, 3, 11, 16, 0, 0, units, 0) .eq. tempo )
 print(t(acum_ind,0:18)+"")
@@ -97,7 +99,7 @@ soma(:,dimsizes(soma(0,:))-1) = asciiread(f, (/toint(dim)/),"float")
                .and. str_concat(t(0,11:12)) .eq. "00" ) then
 
 units = "hours since 2016-03-09 00:00:00"
-wks = gsn_open_wks("pdf","ETS_0900")
+wks = gsn_open_wks("pdf","rain_0900")
 
 acum_ind = ind(cd_inv_calendar(2016, 3, 11, 16, 0, 0, units, 0) .eq. tempo )
 print(t(acum_ind,0:18)+"")
@@ -112,7 +114,7 @@ soma(:,dimsizes(soma(0,:))-1) = asciiread(f, (/toint(dim)/),"float")
                       .and. str_concat(t(0,11:12)) .eq. "12" ) then
 
 units = "hours since 2016-03-09 12:00:00"
-wks = gsn_open_wks("pdf","ETS_0912")
+wks = gsn_open_wks("pdf","rain_0912")
 
 acum_ind = ind(cd_inv_calendar(2016, 3, 11, 16, 0, 0, units, 0) .eq. tempo )
 print(t(acum_ind,0:18)+"")
@@ -127,7 +129,7 @@ soma(:,dimsizes(soma(0,:))-1) = asciiread(f, (/toint(dim)/),"float")
                           .and. str_concat(t(0,11:12)) .eq. "00" ) then
 
 units = "hours since 2016-03-10 00:00:00"
-wks = gsn_open_wks("pdf","ETS_1000")
+wks = gsn_open_wks("pdf","rain_1000")
 
 acum_ind = ind(cd_inv_calendar(2016, 3, 11, 16, 0, 0, units, 0) .eq. tempo )
 print(t(acum_ind,0:18)+"")
@@ -142,7 +144,7 @@ soma(:,dimsizes(soma(0,:))-1) = asciiread(f, (/toint(dim)/),"float")
                       else if (str_concat(t(0,8:9)) .eq. "10" \
                           .and. str_concat(t(0,11:12)) .eq. "12" ) then
 
-wks = gsn_open_wks("pdf","ETS_1012")
+wks = gsn_open_wks("pdf","rain_1012")
 
             units = "hours since 2016-03-10 12:00:00"
             acum_ind = ind(cd_inv_calendar(2016, 3, 11, 16, 0, 0, units, 0) .eq. tempo )
@@ -171,7 +173,7 @@ soma(:,dimsizes(soma(0,:))-1) = asciiread(f, (/toint(dim)/),"float")
 
       end if
 
- 		
+        
 
 
     do i = 0,dimsizes(inst(0,:,0,0))-1  ; do -> 1 até NTEMPO       
@@ -220,11 +222,11 @@ delete(inst)
 
 
 
-
 acum12!0 = "MEMBROS"
 acum12!1 =  "tempo"
 acum12!2 =  "lat"
 acum12!3 =   "lon"
+acum12&tempo = ispan(0,dimsizes(acum12(0,:,0,0))-1,1)
 acum12&lat = lat2d(:,0)
 acum12&lon = lon2d(0,:)
 acum12&lat@units = "degrees_north"
@@ -233,129 +235,52 @@ acum12@lat2d = lat2d
 acum12@lon2d = lon2d
 
 
-soma(:,0:5) = chuva_medianaarea(acum12,lat,lon,lat2d,lon2d)
 
-soma!0 = "tempo"
-soma!1 =  "membros_obs"
-soma&tempo = ispan(0,dimsizes(soma(:,0))-1,1)
+graph = new((/  dimsizes(acum12(:,0,0,0)), 2 /), graphic)
 
-print(soma&tempo)
+opt@cnMinLevelValF = 1
+opt@cnMaxLevelValF = 50
+opt@cnLevelSpacingF = 9
 
-;graph = new((/  dimsizes(acum12(:,0,0,0)), dimsizes( acum12(0,:,0,0)) /), graphic)
-          
-;do j = 0, dimsizes(acum12(:,0,0,0))-1
-;  do i = 0, dimsizes( acum12(0,:,0,0) )-1
-;      print("membro = "+(j+1)+" Time = "+i)
-;      graph(j,i) = gsn_csm_contour_map(wks,acum12(j,i,:,:),opt)
-      
-;  end do
-;end do
+do j = 0, dimsizes(acum12(:,0,0,0))-1
+  
+
+  p = 0  
+  do i = 0, dimsizes(acum12&tempo)-1
+
+    
+    if ( i .ge.  dimsizes(acum12&tempo)-3 \
+           .and. i .le. dimsizes(acum12&tempo)-2  ) then 
+
+            print("membro = "+(j+1)+" Time = "+i)
+             graph(j,p) = gsn_csm_contour_map(wks,acum12(j,i,:,:),opt)
+             p=p+1    
+    end if
+
+
+
+    end do
+end do
+
+dum = new((/4,dimsizes( acum12(:,0,0,0) ),2/),graphic) ; VARIAVEL GRAFICA (LINHAS_DO_QUADRADO,MEMBROS,TEMPO)
 
 delete(acum12)
-write_matrix(soma, "7f7.2", False)
 
+do i = 0,1
+  do v = 0,5    
+        do c = 0,3
 
- ; gsn_panel(wks, graph, (/3,2/), panel)
-
-graph(0) = gsn_csm_y(wks,transpose(soma),opt2)
-
-
-Bias = new((/ dimsizes(ini), dimsizes(soma(0,0:5)) /),"float",9.96921e+36)
-ETS = new((/ dimsizes(ini), dimsizes(soma(0,0:5)) /),"float",9.96921e+36)
-
-
-do i = 0,dimsizes(soma(0,0:5))-1 ; MEMBROS
-
-  do j = 0,dimsizes(ini)-1
-        a=0
-        b=0
-        c=0
-        d=0
-
-  print("membro = "+(i+1))
-      do k = 0,dimsizes(soma(:,0))-1
-        
-
-     ; print(k .ge.  dimsizes(soma&tempo)-3 .and. k .le. dimsizes(soma&tempo)-2+"")
-      print((dimsizes(soma&tempo)-3)+" "+(dimsizes(soma&tempo)-2))
-     
-      ; SE K > 5 (acumulado 5) e menor que acumulado 6
-
-      if ( k .ge.  dimsizes(soma&tempo)-3 \
-           .and. k .le. dimsizes(soma&tempo)-2  ) then 
-
-          if( soma(k,i) .ge. ini(j)  .and. soma(k,i) .lt. fin(j) \ 
-              .and. soma(k,6) .ge. ini(j)  \ 
-              .and. soma(k,6) .lt. fin(j)) then
+              dum(c,v,i) =gsn_add_polyline(wks,graph(v,i),xpts(c:c+1),ypts(c:c+1),resp)
       
-                  a = a+1 ;LEITURA DO A
-      
-           end if  
-
-            if(.not.(soma(k,6) .ge. ini(j) .and. soma(k,6) .lt. fin(j) ) \
-              .and. soma(k,i) .ge. ini(j)  \
-              .and. soma(k,i) .lt. fin(j)) then
-        
-              b = b+1 ;LEITURA DO B
-      
-            end if
-
-            if(.not. (soma(k,i) .ge. ini(j) .and.soma(k,i) .lt. fin(j)) \ 
-               .and. soma(k,6) .ge. ini(j) \
-               .and. soma(k,6) .lt. fin(j)) then
-
-              c = c+1 ;LEITURA DO C
-            
-             end if
-
-            if( .not. ( soma(k,i) .ge. ini(j) .and. soma(k,i) .lt. fin(j) ) \
-                .and. .not.  (soma(k,6) .ge. ini(j) \
-                .and. soma(k,6) .lt. fin(j) )) then 
-
-              d = d+1  ; LEITURA DO D
-
-            end if
-
-        end if
-
-      end do
-      
-      ;print(a+" "+b+" "+c+" "+d)
-      Bias(j,i) = a+b/where( (a+c) .eq. 0, Bias@_FillValue,(a+c))
-      aref = ((a+b)*(a+c))/(dimsizes(soma(:,0)))
-      ETS(j,i) = (a-aref)/where( (a-aref+b+c) .eq. 0, ETS@_FillValue,(a-aref+b+c))
-
-      
-          print(ETS(j,i)+"")
-      
+        end do  
   end do
+end do
 
-end do 
+panel@gsnPanelFigureStrings= (/"mem1","mem2","mem3","mem4","mem5","mem6"/) ; add strings to panel
 
-    option@tmXBLabels = (/"["+ini(0)+":"+fin(0)+")","["+ini(1)+":"+fin(1)+")"\
-                         ,"["+ini(2)+":"+fin(2)+")","["+ini(3)+":"+fin(3)+")"\
-                         ,"["+ini(4)+":"+fin(4)+")" /)
+            gsn_panel(wks, graph(:,0), (/2,3/), panel)
+            gsn_panel(wks, graph(:,1), (/2,3/), panel)
 
-
-  option@tiYAxisString = "BIAS" 
-
-graph(1) = gsn_csm_y(wks,transpose(Bias),option)
-
-
-
-    option@trYMaxF = 1
-    
-    option@trYMinF = 0
-
-
-  option@tiYAxisString = "ETS" 
-
-graph(2) = gsn_csm_y(wks,transpose(ETS),option)
-
-gsn_panel(wks, graph(1:2), (/1,2/),panelxy)
-
-draw(graph(0))
-frame(wks)
 
   end_cpu_time = get_cpu_time()
   print(get_script_prefix_name() + ": elapsed time = " + (end_cpu_time-start_cpu_time) + " seconds.")
